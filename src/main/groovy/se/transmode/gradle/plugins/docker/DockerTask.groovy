@@ -95,7 +95,14 @@ class DockerTask extends DockerTaskBase {
      * @return Name of base docker image
      */
     public String getBaseImage() {
-        def defaultImage = project.hasProperty('targetCompatibility') ? JavaBaseImage.imageFor(project.targetCompatibility).imageName : DEFAULT_IMAGE
+        def defaultImage = DEFAULT_IMAGE;
+        if(project.hasProperty('targetCompatibility')) {
+            try {
+                defaultImage = JavaBaseImage.imageFor(project.targetCompatibility).imageName
+            } catch (IllegalArgumentException e) {
+                logger.warn("Failed to determine default image of java target", e)
+            }
+        }
         return baseImage ?: (project[DockerPlugin.EXTENSION_NAME].baseImage ?: defaultImage)
     }
 

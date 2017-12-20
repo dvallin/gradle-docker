@@ -114,6 +114,18 @@ class DockerTaskTest {
                 is(equalTo(JavaBaseImage.imageFor(testVersion).imageName))
     }
 
+    @Test
+    public void handlesUnsupportedJavaVersionGracefully() {
+        def project = createProject()
+        project.apply plugin: 'java'
+        def task = createTask(project)
+        def testVersion = JavaVersion.VERSION_1_1
+        project.targetCompatibility = testVersion
+        task.baseImage = "taskBase"
+        assertThat project[DockerPlugin.EXTENSION_NAME].baseImage, is(nullValue())
+        assertThat task.baseImage, is(equalTo("taskBase"))
+    }
+
     // @fixme: this is an integration test!
     @Test
     public void testAddFileWithDir() {
